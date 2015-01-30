@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+ 
+<html>
+<head>
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <style type="text/css">
+        @media screen and min-width 1px and max-width 767px {
+            #columns[data-columns]::before {
+                content: '2 .col-xs-6';
+            }
+         
+        }
+         
+        @media screen and min-width768px and max-width 991px {
+            #columns[data-columns]::before {
+                content: '3 .col-sm-4';
+            }
+         
+        }
+         
+        @media screen and min-width992px and max-width 9999px {
+            #columns[data-columns]::before {
+                content: '4 .col-md-3';
+            }
+         
+        }       
+    </style>
+ 
+    <title></title>
+</head>
+ 
+<body>
+    <div class="container">
+        <h1 class="col-xs-12">Books by Ernest Hemingway</h1>
+ 
+        <div data-columns="" id="columns">
+            <div></div> 
+            <div></div> 
+            <div></div>          
+        </div>
+    </div>
+     
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="/insightProject/app/static/js/salvattore.js"></script>
+    <script>
+        function append(title, content) {
+            var grid = document.querySelector('#columns');
+            var item = document.createElement('div');
+            var h = '<div class="panel panel-primary">';
+            h += '<div class="panel-heading">';
+            h += title;
+            h += '</div>';
+            h += '<div class="panel-body">';
+            h += content;
+            h += '</div>';
+            h += '</div>';
+            salvattore['append_elements'](grid, item.outerHTML) = h;
+        }
+        $.getJSON("/insightProject/recWinesTest.json", function (data) {
+            $(data.items).each(function (i, book) {
+                append(book.a, book.j);
+            });
+        });
+    </script>
+</body>
+</html>
