@@ -1,3 +1,6 @@
+from flask import Flask
+app=Flask(__name__)
+
 from flask import render_template, request
 from app import app
 
@@ -5,6 +8,7 @@ from a_Model import getTopTenWine
 import pandas 
 from pandas import DataFrame,Series
 from sklearn.externals import joblib
+import re
 
 def loadModels():
 	global vec,svd, allRevsSVD
@@ -15,10 +19,8 @@ def loadModels():
 
 vec,svd, allRevsSVD=loadModels()
 
-@app.route('/index')
-def index():
-	return render_template("input.html")
-	
+@app.route('/')
+@app.route('/index')	
 @app.route('/input')
 def wine_input():
 	return render_template("input.html")
@@ -45,11 +47,12 @@ def wine_output():
 	wines=[]
 	global vec,svd, allRevsSVD
 	recWines= getTopTenWine(vec,svd, allRevsSVD,w=wine,keyWords=keyWords)
-	recWines.columns=['indx','row','wineName','year','grape','ratingScore','indx2','review']
+	#recWines.columns=['indx','row','wineName','year','grape','ratingScore','indx2','review']
 	for w in recWines.index:
 		row=recWines.ix[w]
-		wines.append(dict(wineName=row[2], wineVariant=row[4], ratingScore=row[5],review=row[7]))
+		row[7]=re.sub('<.*?>',' ',row[7])
+		row[4]=re.sub('"','',row[4])
+		wines.append(dict(wineName=row[2], wineVariant=row[4], ratingScore=row[5],review=row[7], img=row[9],buyUrl=row[10]))
 	  #call a function from a_Model package. note we are only pulling one result in the query
 	#wines=recWines.to_json(orient='index')
 	return render_template("output.html", wines=wines)
-

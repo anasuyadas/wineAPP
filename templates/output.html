@@ -29,9 +29,23 @@
     <link rel="stylesheet" href="static/css/styles.css" />
     <!-- Font Awesome -->
     <link href="static/font/css/font-awesome.min.css" rel="stylesheet">
+
+    <script type="text/javascript" src="http://sr1.wine-searcher.net/widgets/list-supplier/ws_list_supplier.1.min.js"></script> 
 </head>
 
 <body>
+    <style>
+     html { background:
+     url(/static/images/wine_banner.jpg)
+     no-repeat center center fixed;
+     -webkit-background-size: cover;
+     -moz-background-size: cover;
+     -o-background-size: cover;
+     background-position: 0 50px;
+     background-size: cover;
+     overflow: scroll}
+     body {background: transparent; }
+   </style>
     <header class="header">
         <div class="container">
             <nav class="navbar navbar-inverse" role="navigation">
@@ -42,7 +56,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a href="#" class="navbar-brand scroll-top logo"><b>Oeno</b></a>
+                    <a href="#" class="navbar-brand scroll-top logo"><b>GrapeVin</b></a>
                 </div>
                 <!--/.navbar-header-->
                 <div id="main-nav" class="collapse navbar-collapse">
@@ -58,15 +72,14 @@
         <!--/.container-->
     </header>
     <!--/.header-->
+
     <div id="#top"></div>
-    <section id="home">
-        <div class="banner-container">
-            <img src="static/images/wine_banner.jpg" alt="banner" />
-            <div class="container banner-content">
+
                <br>
                 <br>
+                <br>
+                <br>
                    <form  action="/output" method="GET">
-                    <div class="parlex-back">
                     <div class="col-sm-4">
                         <div class="form-group">
                             <label for="ID">Wine name and vintage:</label>
@@ -84,7 +97,6 @@
      </div>
     <br>
     <br>
-
      <!-- Title -->
         <div class="row">
             <div class="col-lg-12">
@@ -97,19 +109,25 @@
  {% for w in wines %}
             <div class="col-md-3 hero-feature">
                 <div class="thumbnail">
-                    <img src="static/images/redPlaceholder.jpg" alt="">
+                    <img src="{{w['img']}}" width ="75" height="75" alt="" >
                     <div class="caption">
-                        <h5>{{w['wineName']}}</h5>
-                        <h5>{{w['ratingScore']}}</h5>
-                        <h5>{{w['grape']}}</h5>
-                        <h6>{{w['review']}}</h6>
+                        <h4>{{w['wineName']}}</h5>
+                        <h4>{{w['ratingScore']}}</h5>
+                        <h4>{{w['wineVariant']}}</h5>
+                        <h5>{{w['review']}}<h5>
                         <p>
-                            <a href="#" class="btn btn-primary">Buy Now!</a> 
+                            <a href="{{w['buyUrl']}}" class="btn btn-primary">Buy Now!</a> 
                         </p>
+
                 </div>
+
                </div>
             </div>
+            {%if not(loop.index % 4)%}
+            <div class="clearfix"></div>
+            {%endif%}
          {% endfor %}
+     </div>
          </section >
             <!-- Bootstrap core JavaScript
     ================================================== -->

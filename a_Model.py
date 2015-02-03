@@ -6,6 +6,8 @@ import numpy as np
 import random
 import re
 
+from sklearn.externals import joblib
+
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -26,10 +28,20 @@ def getReviews(ind,cur):
 		reviews=reviews.append(revs)
 	return reviews
 
+def getUrlImg(ind,cur):
+	urlImg=pd.DataFrame()
+	for i in ind:
+		cur.execute("SELECT wineId, imageFile,url review FROM wineImageUrl WHERE wineId  ='%s';" %i)
+		query_results = cur.fetchall()
+		u=pd.DataFrame(list(query_results))
+		urlImg=urlImg.append(u)
+	return urlImg
+
+
 def getWines(ind,cur):
 	recWineList=pd.DataFrame()
 	for i in ind:
-		cur.execute("SELECT indx,wineName, year, wineVariant,  ratingScore FROM snapCTwine WHERE indx     ='%s';" %i)
+		cur.execute("SELECT indx,wineId,wineName, year, wineVariant,  ratingScore FROM snapCTwine WHERE indx     ='%s';" %i)
 		query_results = cur.fetchall()
 		existingWines=pd.DataFrame(list(query_results))
 		recWineList=recWineList.append(existingWines)
@@ -73,30 +85,21 @@ def getTopTenWine(vec,svd, allRevsSVD,**kwargs):
 			cosSim=cosine_similarity(allRevsSVD,keyWordsSVD)
 			wineInd=getWineList(cosSim,cur)
 			recWineList=recWineList.append(getWines(wineInd,cur))
-		else: 
-			recWineList=[]
-
-		if len(recWineList) == 0: # suggest a random selection of wines - eventually this should be from the astor database
+		else:
+			 # suggest a random selection of wines - eventually this should be from the astor database
 			rows=len(allRevsSVD)
 			allIDX=range(rows)
 			random.shuffle(allIDX)
 			recWineList=recWineList.append(getWines(allIDX[:10],cur))
 		
 	recWineList=recWineList.sort(columns=3,ascending=False).drop_duplicates()
-	recWineList=recWineList[recWineList[3] != ' 0']
+	recWineList=recWineList[recWineList[3] != 0]
 
 	#access reviews for recommended wines
 	ind=recWineList[0]
 	review=getReviews(ind,cur)
-
-	recWineList=pd.concat([recWineList,review],axis=1)
-	recWineList.columns=range(7)
+	urlImg=getUrlImg(recWineList[1],cur)
+	recWineList=pd.concat([recWineList,review,urlImg],axis=1)
+	recWineList.columns=range(11)
 	recWineList=recWineList.reset_index()
 	return recWineList[:10]
-
-
-
-
-
-
-
