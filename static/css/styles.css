@@ -31,11 +31,11 @@ body {
 }
 
 p {
-    color: #212121;
+    color:  #fff;
 	line-height:10px;
 }
 .pDark p {
-    color: #6D6D6D;
+    color: #fff;
 }
 
 .pDark h3 {

@@ -76,14 +76,26 @@
             <div class="container banner-content">
                 <br>
                 <br>
+                <br>
+                <br>
                    <form  action="/output" method="GET">
         <div class="col-sm-4">
+            <div class="form-group">
+          <h4 class="text-danger">Select a wine:</h4>
+        <select id="wine" name="wine" class="input-lg select2 form-control">
+            <option selected="selected">Select a wine</option>
+            {% for r in results %}
+                <option value="{{r[1]}}">{{r[1]}}</option>
+            {% endfor %}
+        </select>
+
+        </div>
                         <div class="form-group">
-                            <label for="ID">Wine name and vintage:</label>
+                            <h4 class="text-danger">Or enter a wine name:</h4>
                             <input type="text" class="form-control" id="wine" name='wine'  placeholder="Enter wine" title="Please enter your name (at least 2 characters)">
                             </div>
                             <div class="form-group">
-                            <label for="ID">wine characteristics</label>
+                            <h4 class="text-danger">Or enter wine characteristics:</h4></label>
                             <input type="text" class="form-control" id="key" name='key'  placeholder="Enter wine" title="Please enter your name (at least 2 characters)">
                             </div>
 
