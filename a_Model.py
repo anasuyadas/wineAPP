@@ -48,7 +48,7 @@ def getWines(ind,cur):
 	return recWineList
 
 
-def getTopTenWine(vec,svd, allRevsSVD,**kwargs):
+def getTopTenWine(**kwargs):
 	# enter in the for of w='name', keywords='words', numWines=
 	
 	# see what arguemenst were passed and parse them into their respective variable or assign default values
@@ -62,28 +62,26 @@ def getTopTenWine(vec,svd, allRevsSVD,**kwargs):
 	# if nothing is entered in the wine search menu search the dropdown
 	if len(w)<2:
 		w=wDrop
-		
 	with db: 
 		cur = db.cursor()
 		if len(w) > 1: # if a wine name was provided  look it up in the db #### need to implement partial string matches
-			if len(w)<2:
-				w=wDrop
-			query="SELECT indx,wineName, year,wineVariant,  ratingScore FROM snapCTwine WHERE wineName LIKE "+"'%"+w + "%' LIMIT 10;"
+			query="SELECT indx,wineName, year,wineVariant,  ratingScore FROM snapCTwine WHERE wineName LIKE "+"'%"+w + "%' OR wineVariant LIKE "+"'%"+w + "%' LIMIT 10;"
 			cur.execute(query)
 			query_results = cur.fetchall()
-			if len(query_results) > 0: # if a wine was returned
+			if len(query_results) > 0: # if a wine was returned 
 				existingWines=pd.DataFrame(list(query_results))
 				
 				for ind in existingWines[0]: # get cosSim for each wine and extract most similar wines from 
-					cosSim=cosine_similarity(allRevsSVD,allRevsSVD[ind,:])
-					wineInd=getWineList(cosSim,cur)
+					cur.execute("SELECT * FROM similarWineIndxs where indx   ='%s';" %ind)
+					wineInd=cur.fetchall()[0]
+					wineInd=list(wineInd)[10:]
 					recWineList=recWineList.append(getWines(wineInd,cur))
 			
-				msg='Ten wines were found similar to the '+ w
+				msg='You entered: ' + w +'. Here are ten wines you might like!!'
 				status=(1,msg)
 			elif len(query_results) == 0: # if no wines are returned set to 0
 				recWineList=0
-				status=(0,'Sorry, unable to find any similar wines!!')		
+				status=(0,'Sorry, unable to find any suggestions!!')		
 		elif len(keyWords) >0:
 			keyWords=keyWords.lower()
 			keyWords=re.sub(r'[\W_]+', ' ', keyWords)
@@ -97,8 +95,8 @@ def getTopTenWine(vec,svd, allRevsSVD,**kwargs):
 			msg='Found ten wines with properties like ' + keyWords
 			status=(1,msg)
 	try:
-		recWineList=recWineList.sort(columns=3,ascending=False).drop_duplicates()
-		recWineList=recWineList[recWineList[3] != 0]
+		recWineList=recWineList.sort(columns=5,ascending=False).drop_duplicates()
+		recWineList=recWineList[recWineList[5] != 0]
 		ind=recWineList[0]
 		review=getReviews(ind,cur)
 		urlImg=getUrlImg(recWineList[1],cur)
